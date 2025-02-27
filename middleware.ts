@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-
+  console.log("path", path);
   // Define public paths that don't require authentication
   const isPublicPath = path === "/auth" || path === "/";
 

@@ -2,17 +2,42 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import UserProfile from "@/components/UserProfile";
+
+interface UserData {
+  id: string;
+  name: string | null;
+  email: string | null;
+  image: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/auth");
     }
   }, [status, router]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (session?.user) {
+        const response = await fetch("/api/user");
+        if (response.ok) {
+          const data = await response.json();
+          setUserData(data);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [session]);
 
   if (status === "loading") {
     return (
@@ -34,8 +59,13 @@ export default function DashboardPage() {
                 Profile Information
               </h2>
               <div className="space-y-2">
-                <p>Name: {session?.user?.name}</p>
-                <p>Email: {session?.user?.email}</p>
+                <p>Name: {userData?.name}</p>
+                <p>Email: {userData?.email}</p>
+                <p>
+                  Member Since:{" "}
+                  {userData?.createdAt &&
+                    new Date(userData.createdAt).toLocaleDateString()}
+                </p>
               </div>
             </div>
 
@@ -43,12 +73,17 @@ export default function DashboardPage() {
               <h2 className="text-xl font-semibold mb-4">Account Status</h2>
               <div className="space-y-2">
                 <p>Status: Active</p>
-                <p>Member Since: {new Date().toLocaleDateString()}</p>
+                <p>
+                  Last Updated:{" "}
+                  {userData?.updatedAt &&
+                    new Date(userData.updatedAt).toLocaleDateString()}
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <UserProfile />
     </div>
   );
 }
