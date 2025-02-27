@@ -1,11 +1,13 @@
 import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@/lib/prisma";
+
+// Make sure NEXTAUTH_SECRET is defined
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error("NEXTAUTH_SECRET is not defined");
+}
 
 const handler = NextAuth({
-  adapter: PrismaAdapter(prisma),
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
@@ -29,13 +31,13 @@ const handler = NextAuth({
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },
-    async session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-      }
-      return session;
-    },
   },
+  // Explicitly configure JWT
+  jwt: {
+    // Maximum age of the session in seconds (30 days)
+    maxAge: 30 * 24 * 60 * 60,
+  },
+  // Use the NEXTAUTH_SECRET environment variable
   secret: process.env.NEXTAUTH_SECRET,
 });
 

@@ -1,17 +1,30 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
 export default function AuthPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleSignIn = async (provider: "github" | "google") => {
+    try {
+      await signIn(provider, { callbackUrl: "/dashboard" });
+    } catch (error) {
+      console.error("Sign in error:", error);
+    }
+  };
 
   const handleSocialLogin = async (provider: "github" | "google") => {
     setIsLoading(true);
     try {
-      await signIn(provider, { callbackUrl: "/" });
+      // Use the signIn function with fewer options to reduce complexity
+      await signIn(provider, {
+        callbackUrl: "/dashboard",
+      });
     } catch (error) {
       console.error("Error during social login:", error);
     } finally {

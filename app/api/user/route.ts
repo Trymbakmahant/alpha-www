@@ -25,7 +25,6 @@ export async function GET() {
     const { accounts, ...safeUser } = user;
     return NextResponse.json(safeUser);
   } catch (error) {
-    console.error("Error fetching user:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -51,7 +50,6 @@ export async function PUT(request: Request) {
 
     return NextResponse.json(updatedUser);
   } catch (error) {
-    console.error("Error updating user:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
