@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-   "build": "npx update-browserslist-db@latest && prisma generate && next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
