@@ -1,58 +1,118 @@
-import { getServerSession } from "next-auth/next";
-import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function GET() {
+  const session = await getServerSession();
+
+  if (!session || !session.user) {
+    return new NextResponse(
+      JSON.stringify({ error: "You must be logged in." }),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
   try {
-    const session = await getServerSession();
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      include: {
-        accounts: true,
+      where: {
+        email: session.user?.email!,
       },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Remove sensitive information
-    const { accounts, ...safeUser } = user;
-    return NextResponse.json(safeUser);
+    return NextResponse.json(user);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+    console.error(error);
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
   }
 }
 
-export async function PUT(request: Request) {
-  try {
-    const session = await getServerSession();
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+export async function PUT(req: Request) {
+  const session = await getServerSession();
 
-    const data = await request.json();
-    const updatedUser = await prisma.user.update({
-      where: { email: session.user.email },
+  if (!session || !session.user) {
+    return new NextResponse(
+      JSON.stringify({ error: "You must be logged in." }),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
+  try {
+    const body = await req.json();
+    const { name, bio, location, image } = body;
+
+    const user = await prisma.user.update({
+      where: {
+        email: session.user?.email!,
+      },
       data: {
-        name: data.name,
-        image: data.image,
+        name,
+        bio,
+        location,
+        image,
       },
     });
 
-    return NextResponse.json(updatedUser);
+    return NextResponse.json(user);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return new NextResponse(
+      JSON.stringify({ error: "You must be logged in." }),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
+  try {
+    const body = await request.json();
+    // Your POST route logic here
+    return NextResponse.json({ message: "Success" });
+  } catch (error) {
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
   }
 }

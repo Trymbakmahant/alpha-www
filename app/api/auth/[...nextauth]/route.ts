@@ -1,6 +1,18 @@
 import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import { PrismaClient } from "@prisma/client";
+
+// PrismaClient singleton implementation
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
 
 // Make sure NEXTAUTH_SECRET is defined
 if (!process.env.NEXTAUTH_SECRET) {
@@ -23,7 +35,45 @@ const handler = NextAuth({
     signOut: "/auth",
     error: "/auth", // Error code passed in query string as ?error=
   },
+
   callbacks: {
+    async signIn({ user, account, profile }) {
+      try {
+        // Test database connection
+        await prisma.$connect();
+
+        // Check if user exists
+        const existingUser = await prisma.user.findUnique({
+          where: {
+            email: user.email!,
+          },
+        });
+
+        if (!existingUser) {
+          // Create new user if they don't exist
+          const newUser = await prisma.user.create({
+            data: {
+              email: user.email!,
+              name: user.name,
+              image: user.image,
+            },
+          });
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Detailed error in signIn callback:", error);
+        return false;
+      } finally {
+        await prisma.$disconnect();
+      }
+    },
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
     async redirect({ url, baseUrl }) {
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`;
