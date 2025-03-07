@@ -3,6 +3,24 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -20,6 +38,7 @@ export function CreateProjectModal({
     description: "",
     imageUrl: "",
     category: "Game", // Default category
+    private: false, // Default to public
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,6 +72,7 @@ export function CreateProjectModal({
         description: "",
         imageUrl: "",
         category: "Game",
+        private: false,
       });
     } catch (error) {
       console.error("Error creating project:", error);
@@ -62,118 +82,83 @@ export function CreateProjectModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white/70 backdrop-blur-md border border-white/30 rounded-lg p-6 w-full max-w-md shadow-xl">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-800">
-            Create New Project
-          </h2>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            ×
-          </button>
-        </div>
-
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create New Project</DialogTitle>
+        </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium mb-1 text-gray-700"
-            >
-              Title
-            </label>
-            <input
-              type="text"
+          <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
               id="title"
               value={formData.title}
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="w-full p-2 bg-white/50 backdrop-blur-sm border border-white/30 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              placeholder="Project title"
               required
             />
           </div>
-
-          <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium mb-1 text-gray-700"
-            >
-              Description
-            </label>
-            <textarea
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
               id="description"
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="w-full p-2 bg-white/50 backdrop-blur-sm border border-white/30 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-              rows={4}
+              placeholder="Project description"
               required
             />
           </div>
-
-          <div>
-            <label
-              htmlFor="imageUrl"
-              className="block text-sm font-medium mb-1 text-gray-700"
-            >
-              Image URL
-            </label>
-            <input
-              type="url"
+          <div className="space-y-2">
+            <Label htmlFor="imageUrl">Image URL</Label>
+            <Input
               id="imageUrl"
               value={formData.imageUrl}
               onChange={(e) =>
                 setFormData({ ...formData, imageUrl: e.target.value })
               }
-              className="w-full p-2 bg-white/50 backdrop-blur-sm border border-white/30 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              placeholder="Image URL"
               required
             />
           </div>
-
-          <div>
-            <label
-              htmlFor="category"
-              className="block text-sm font-medium mb-1 text-gray-700"
-            >
-              Category
-            </label>
-            <select
-              id="category"
+          <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <Select
               value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
+              onValueChange={(value) =>
+                setFormData({ ...formData, category: value })
               }
-              className="w-full p-2 bg-white/50 backdrop-blur-sm border border-white/30 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-              required
             >
-              <option value="Game">Game</option>
-              <option value="Web">Web</option>
-              <option value="Mobile">Mobile</option>
-              <option value="Other">Other</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Game">Game</SelectItem>
+                <SelectItem value="Web">Web</SelectItem>
+                <SelectItem value="Mobile">Mobile</SelectItem>
+                <SelectItem value="Desktop">Desktop</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-
-          <div className="flex justify-end space-x-2 mt-6">
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="px-4 py-2 text-gray-600 bg-white/50 backdrop-blur-sm border border-white/30 rounded-md hover:bg-white/70 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600/90 backdrop-blur-sm text-white rounded-md hover:bg-blue-700/90 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-            >
-              Create Project
-            </button>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="private"
+              checked={formData.private}
+              onCheckedChange={(checked: boolean) =>
+                setFormData({ ...formData, private: checked })
+              }
+            />
+            <Label htmlFor="private">Make project private</Label>
           </div>
+          <Button type="submit" className="w-full">
+            Create Project
+          </Button>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

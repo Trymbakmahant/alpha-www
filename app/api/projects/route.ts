@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 
-// GET all projects
+// GET all public projects
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const category = searchParams.get("category") || "all";
 
     let query = prisma.project.findMany({
-      take: 15,
+      take: 40,
       orderBy: {
         createdAt: "desc",
       },
@@ -24,6 +24,7 @@ export async function GET(request: Request) {
       },
       where: {
         AND: [
+          { private: false }, // Only get public projects
           {
             OR: [
               { title: { contains: search, mode: "insensitive" } },
@@ -59,7 +60,7 @@ export async function POST(req: Request) {
     }
 
     const json = await req.json();
-    const { title, imageUrl, category, description } = json;
+    const { title, imageUrl, category, description, private: isPrivate } = json;
 
     if (!title || !imageUrl || !category || !description) {
       return NextResponse.json(
@@ -79,6 +80,7 @@ export async function POST(req: Request) {
         imageUrl,
         category,
         description,
+        private: isPrivate || false,
         user: {
           connect: {
             id: user.id,

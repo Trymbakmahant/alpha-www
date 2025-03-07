@@ -2,25 +2,17 @@
 
 import { ProjectCard } from "@/components/Dashboard/UserPages/ProjectCard";
 import { MyProjectNavbar } from "@/components/Dashboard/UserPages/MyProjectNavbar";
-import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
+import { useUserProjects } from "@/hooks/use-projects";
 
 export default function ExploreProjects() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const { data: projects, isLoading } = useQuery({
-    queryKey: ["projects", searchQuery, selectedCategory],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (searchQuery) params.append("search", searchQuery);
-      if (selectedCategory) params.append("category", selectedCategory);
-
-      const response = await fetch(`/api/projects?${params.toString()}`);
-      if (!response.ok) throw new Error("Failed to fetch projects");
-      return response.json();
-    },
-  });
+  const { data: projects, isLoading } = useUserProjects(
+    searchQuery,
+    selectedCategory || ""
+  );
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);

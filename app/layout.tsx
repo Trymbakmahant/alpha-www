@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import StarsCanvas from "@/components/main/StarBackground";
-
+import { ThemeProvider } from "@/components/theme-provider";
 import AuthProvider from "./providers/SessionProvider";
 
 import Providers from "@/components/Providers";
@@ -28,10 +28,17 @@ export default function RootLayout({
           <StarsCanvas />
         </div>
         <Providers>
-          <AuthProvider>
-            <main className="relative z-[1]"> {children}</main>
-            {/* <Footer /> */}
-          </AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <AuthProvider>
+              <main className="relative z-[1]"> {children}</main>
+              {/* <Footer /> */}
+            </AuthProvider>
+          </ThemeProvider>
         </Providers>
       </body>
     </html>

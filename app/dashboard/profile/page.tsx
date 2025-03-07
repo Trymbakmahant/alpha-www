@@ -7,12 +7,15 @@ import { ProjectCard } from "@/components/Dashboard/UserPages/ProjectCard";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useProjects } from "@/hooks/use-projects";
+import { useUserProjects } from "@/hooks/use-projects";
 
 export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
-  const { data: projects, isLoading: projectsLoading } = useProjects("", "");
+  const { data: projects, isLoading: projectsLoading } = useUserProjects(
+    "",
+    ""
+  );
 
   useEffect(() => {
     const fetchUser = async () => {

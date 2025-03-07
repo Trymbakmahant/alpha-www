@@ -19,38 +19,33 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Link
-      href={`/dashboard/projects/${project.id}`}
-      className=" w-[300px] h-[300px] "
-    >
-      <Card className="hover:bg-gray-900 transition-colors">
-        <CardHeader>
-          <h3 className="font-semibold">{project.title}</h3>
+    <Link href={`/dashboard/projects/${project.id}`}>
+      <Card className="bg-[#0F0F0F] border-0 overflow-hidden hover:bg-[#1A1A1A] transition-colors">
+        <CardHeader className="p-4">
+          <h3 className="text-xl font-semibold text-white">{project.title}</h3>
         </CardHeader>
         {project.imageUrl && (
-          <div className="relative  w-full h-48 overflow-hidden">
+          <div className="relative w-full h-48">
             <Image
               src={project.imageUrl}
               alt={project.title}
               fill
-              className="object-cover rounded-lg px-4"
+              className="object-cover"
             />
           </div>
         )}
-        <CardContent className="pt-4">
-          <p className="text-sm text-muted-foreground line-clamp-2">
+        <CardContent className="p-4">
+          <p className="text-gray-400 text-sm line-clamp-2">
             {project.description}
           </p>
         </CardContent>
-        <CardFooter>
-          <div className="flex items-center gap-2">
-            <span className="text-xs px-2 py-1 bg-primary/10 rounded-full">
-              {project.category}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {new Date(project.createdAt).toLocaleDateString()}
-            </span>
-          </div>
+        <CardFooter className="p-4 flex items-center justify-between">
+          <span className="text-sm px-3 py-1 bg-[#2A0E61] text-white rounded-full">
+            {project.category}
+          </span>
+          <span className="text-sm text-gray-400">
+            {new Date(project.createdAt).toLocaleDateString()}
+          </span>
         </CardFooter>
       </Card>
     </Link>

@@ -1,54 +1,73 @@
 "use client";
 
-import { ExplorerNavbar } from "@/components/Dashboard/ExplorerPage/ExplorerNavbar";
-import { ProjectCard } from "@/components/Dashboard/ExplorerPage/ProjectCard";
-import { useProjects } from "@/hooks/use-projects";
-import { useState } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ProjectCard } from "@/components/Dashboard/UserPages/ProjectCard";
+import { ExploreNavbar } from "@/components/Dashboard/UserPages/ExploreNavbar";
+import { usePublicProjects } from "@/hooks/use-projects";
+import { useCallback, useState } from "react";
 
-const queryClient = new QueryClient();
+export default function ExplorePage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-function ExplorePageContent() {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
+  const { data: projects, isLoading } = usePublicProjects(
+    searchQuery,
+    selectedCategory || ""
+  );
 
-  const { data: projects, isLoading, error } = useProjects(search, category);
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+
+  const handleCategoryChange = useCallback((category: string | null) => {
+    setSelectedCategory(category);
+  }, []);
 
   return (
-    <div className="container w-full h-[calc(100vh-100px)] my-6 bg-white/10 mx-auto p-6">
-      <ExplorerNavbar onSearch={setSearch} onCategoryChange={setCategory} />
-
-      {error ? (
-        <div className="text-center py-10">
-          <p className="text-red-500">
-            Error loading projects. Please try again.
+    <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Explore Projects
+          </h2>
+          <p className="text-muted-foreground">
+            Discover amazing projects from the community
           </p>
         </div>
-      ) : isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="h-[400px] w-[350px] bg-accent/10 animate-pulse rounded-lg"
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects?.map((project: any) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+      </div>
 
-// Wrap the page with QueryClientProvider
-export default function ExplorePage() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ExplorePageContent />
-    </QueryClientProvider>
+      <ExploreNavbar
+        onSearch={handleSearch}
+        onCategoryChange={handleCategoryChange}
+      />
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {isLoading ? (
+          // Skeleton loading state
+          <>
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="rounded-lg h-[400px] w-[350px] border bg-card text-card-foreground shadow-sm animate-pulse"
+              >
+                <div className="h-48 rounded-t-lg bg-accent/10" />
+                <div className="p-6 space-y-4">
+                  <div className="h-4 w-2/3 bg-accent/10 rounded" />
+                  <div className="h-4 w-full bg-accent/10 rounded" />
+                  <div className="h-4 w-1/2 bg-accent/10 rounded" />
+                </div>
+              </div>
+            ))}
+          </>
+        ) : projects?.length === 0 ? (
+          <div className="col-span-full text-center">
+            <p className="text-lg text-muted-foreground">No projects found</p>
+          </div>
+        ) : (
+          projects?.map((project: any) => (
+            <ProjectCard key={project.id} project={project} />
+          ))
+        )}
+      </div>
+    </div>
   );
 }
