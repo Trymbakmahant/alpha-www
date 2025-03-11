@@ -57,17 +57,19 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </div>
         </div>
 
-        {/* Project Image */}
-        {project.imageUrl && (
-          <div className="relative w-full h-[400px] mb-8">
-            <Image
-              src={project.imageUrl}
-              alt={project.title}
-              fill
-              className="object-cover rounded-lg"
-            />
-          </div>
-        )}
+        {/* Scratch Project Embed */}
+        <div className="mb-8">
+          <iframe
+            src="https://scratch.mit.edu/projects/830033850/embed"
+            allowTransparency={true}
+            width="485"
+            height="402"
+            frameBorder="0"
+            scrolling="no"
+            allowFullScreen
+            className="mx-auto rounded-lg"
+          />
+        </div>
 
         {/* Category */}
         <div className="mb-6">
