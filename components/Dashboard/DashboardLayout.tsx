@@ -1,12 +1,16 @@
+"use client";
+
 import { Sidebar } from "@/components/Navigation/sidebar";
 import Navbar from "@/components/Navigation/Navbar";
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { ReactNode } from "react";
+
+interface DashboardLayoutProps {
+  children: ReactNode;
+}
+
+export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="min-h-screen bg-transparent text-white">
+    <div className="min-h-screen bg-[#0a0118] text-white">
       <Navbar />
       <div className="flex h-screen pt-[65px]">
         <Sidebar />

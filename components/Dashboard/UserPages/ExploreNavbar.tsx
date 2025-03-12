@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCallback } from "react";
+import { CreateProjectButton } from "@/components/Dashboard/CreateProjectButton";
 
 interface ExploreNavbarProps {
   onSearch: (query: string) => void;
@@ -32,25 +33,32 @@ export function ExploreNavbar({
   );
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4">
-      <Input
-        placeholder="Search projects..."
-        className="sm:w-[350px]"
-        onChange={handleSearch}
-      />
-      <Select onValueChange={handleCategoryChange} defaultValue="all">
-        <SelectTrigger className="sm:w-[180px]">
-          <SelectValue placeholder="Select category" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Categories</SelectItem>
-          <SelectItem value="Game">Game</SelectItem>
-          <SelectItem value="Web">Web</SelectItem>
-          <SelectItem value="Mobile">Mobile</SelectItem>
-          <SelectItem value="Desktop">Desktop</SelectItem>
-          <SelectItem value="Other">Other</SelectItem>
-        </SelectContent>
-      </Select>
+    <div className="flex items-center justify-between w-full gap-4 mb-6">
+      <div className="flex-1 max-w-[350px]">
+        <Input
+          placeholder="Search Project"
+          className="w-full"
+          onChange={handleSearch}
+        />
+      </div>
+      <div>
+        <Select onValueChange={handleCategoryChange} defaultValue="all">
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="Game">Game</SelectItem>
+            <SelectItem value="Web">Web</SelectItem>
+            <SelectItem value="Mobile">Mobile</SelectItem>
+            <SelectItem value="Desktop">Desktop</SelectItem>
+            <SelectItem value="Other">Other</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <CreateProjectButton />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { ProjectCard } from "@/components/Dashboard/UserPages/ProjectCard";
-import { ExploreNavbar } from "@/components/Dashboard/UserPages/ExploreNavbar";
+import { ProjectCard } from "@/components/Dashboard/ExplorerPage/ProjectCard";
+import { ExplorerNavbar } from "@/components/Dashboard/ExplorerPage/ExplorerNavbar";
 import { usePublicProjects } from "@/hooks/use-projects";
 import { useCallback, useState } from "react";
 
@@ -35,7 +35,7 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      <ExploreNavbar
+      <ExplorerNavbar
         onSearch={handleSearch}
         onCategoryChange={handleCategoryChange}
       />

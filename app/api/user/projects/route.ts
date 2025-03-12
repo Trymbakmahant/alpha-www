@@ -49,6 +49,13 @@ export async function GET(request: Request) {
             image: true,
           },
         },
+        _count: {
+          select: {
+            likes: true,
+            dislikes: true,
+            comments: true,
+          },
+        },
       },
     });
 
