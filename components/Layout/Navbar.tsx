@@ -49,12 +49,15 @@ const Navbar = () => {
         </div>
         <div className="flex items-center justify-center flex-1">
           <div className="flex items-center justify-between gap-8 px-6 py-2 rounded-full text-gray-200">
-            <Link href="/docs" className="hover:text-white transition-colors">
+            <Link
+              href="/docs"
+              className="hover:text-white border-r border-gray-700/80 pr-4 transition-colors"
+            >
               Docs
             </Link>
             <Link
               href="https://www.thesendcoin.com/"
-              className="hover:text-white transition-colors"
+              className="hover:text-white border-r border-gray-700/80 pr-4 transition-colors"
             >
               The Send Coin
             </Link>

@@ -134,7 +134,7 @@ export default function EditProfilePage() {
             />
           </div>
 
-          <div className="flex justify-end space-x-4">
+          <div className="flex  text-black justify-end space-x-4">
             <Button
               type="button"
               variant="outline"
