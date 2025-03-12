@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCallback } from "react";
-import { CreateProjectButton } from "@/components/Dashboard/CreateProjectButton";
+import { CreateProjectButton } from "@/components/Pages/Dashboard/CreateProjectButton";
 
 interface ExploreNavbarProps {
   onSearch: (query: string) => void;

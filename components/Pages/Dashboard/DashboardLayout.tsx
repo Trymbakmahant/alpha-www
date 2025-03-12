@@ -1,7 +1,7 @@
 "use client";
 
-import { Sidebar } from "@/components/Navigation/sidebar";
-import Navbar from "@/components/Navigation/Navbar";
+import { Sidebar } from "@/components/Layout/sidebar";
+import Navbar from "@/components/Layout/Navbar";
 import { ReactNode } from "react";
 
 interface DashboardLayoutProps {

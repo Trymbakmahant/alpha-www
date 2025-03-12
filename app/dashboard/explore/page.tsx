@@ -1,7 +1,7 @@
 "use client";
 
-import { ProjectCard } from "@/components/Dashboard/ExplorerPage/ProjectCard";
-import { ExplorerNavbar } from "@/components/Dashboard/ExplorerPage/ExplorerNavbar";
+import { ProjectCard } from "@/components/Pages/Dashboard/ExplorerPage/ProjectCard";
+import { ExplorerNavbar } from "@/components/Pages/Dashboard/ExplorerPage/ExplorerNavbar";
 import { usePublicProjects } from "@/hooks/use-projects";
 import { useCallback, useState } from "react";
 

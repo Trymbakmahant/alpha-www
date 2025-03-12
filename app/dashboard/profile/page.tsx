@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ProjectCard } from "@/components/Dashboard/UserPages/ProjectCard";
+import { ProjectCard } from "@/components/Pages/Dashboard/UserPages/ProjectCard";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

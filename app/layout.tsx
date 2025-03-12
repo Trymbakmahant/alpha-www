@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import StarsCanvas from "@/components/main/StarBackground";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/app/providers/theme-provider";
 import AuthProvider from "./providers/SessionProvider";
-
-import Providers from "@/components/Providers";
+import StarsCanvas from "@/components/Pages/Landing/main/StarBackground";
+import Providers from "@/app/providers/Providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
