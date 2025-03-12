@@ -7,7 +7,7 @@ import {
 import { Project } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ThumbsUp, ThumbsDown, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,15 +82,8 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
 
-  // Fetch comments when dialog opens
-  useEffect(() => {
-    if (isCommentDialogOpen) {
-      fetchComments();
-    }
-  }, [isCommentDialogOpen]);
-
   // Fetch comments from the API
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       setIsLoadingComments(true);
       const response = await fetch(`/api/projects/${project.id}/comments`);
@@ -105,7 +98,14 @@ export function ProjectCard({ project }: ProjectCardProps) {
     } finally {
       setIsLoadingComments(false);
     }
-  };
+  }, [project.id]);
+
+  // Fetch comments when dialog opens
+  useEffect(() => {
+    if (isCommentDialogOpen) {
+      fetchComments();
+    }
+  }, [isCommentDialogOpen, fetchComments]);
 
   // Handle like button click
   const handleLike = async (e: React.MouseEvent) => {

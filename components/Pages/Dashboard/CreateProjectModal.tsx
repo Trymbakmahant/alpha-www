@@ -6,7 +6,6 @@ import { useSession } from "next-auth/react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
@@ -23,17 +22,10 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+
 import {
   PlusCircle,
-  Image,
+  Image as ImageIcon,
   FileText,
   Tag,
   Lock,
@@ -186,7 +178,7 @@ export function CreateProjectModal({
               htmlFor="imageUrl"
               className="text-white/80 flex items-center gap-2"
             >
-              <Image className="h-4 w-4 text-blue-400" />
+              <ImageIcon className="h-4 w-4 text-blue-400" />
               Image URL
             </Label>
             <Input
