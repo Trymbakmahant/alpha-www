@@ -7,7 +7,7 @@ import {
 import { Project } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Trash2, ThumbsUp, ThumbsDown, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,9 +50,10 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState<Comment[]>(project.comments || []);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [likesCount, setLikesCount] = useState(project.likes || 0);
   const [dislikesCount, setDislikesCount] = useState(project.dislikes || 0);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
   const router = useRouter();
 
   // Format date as MM/DD/YYYY
@@ -64,6 +65,40 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
       year: "numeric",
     }
   );
+
+  const fetchComments = useCallback(async () => {
+    try {
+      setIsLoadingComments(true);
+      const response = await fetch(`/api/projects/${project.id}/comments`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch comments");
+      }
+      const data = await response.json();
+
+      // Convert API comment format to local format
+      const formattedComments: Comment[] = data.map((comment: any) => ({
+        id: comment.id,
+        text: comment.content,
+        userName: comment.user.name || "Anonymous",
+        userImage: comment.user.image,
+        createdAt: new Date(comment.createdAt),
+      }));
+
+      setComments(formattedComments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      toast.error("Failed to load comments");
+    } finally {
+      setIsLoadingComments(false);
+    }
+  }, [project.id]);
+
+  // Fetch comments when dialog opens
+  useEffect(() => {
+    if (isCommentsDialogOpen) {
+      fetchComments();
+    }
+  }, [isCommentsDialogOpen, fetchComments]);
 
   const handleDelete = async () => {
     try {
@@ -143,21 +178,46 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
     setIsCommentsDialogOpen(true);
   };
 
-  const handleAddComment = (e: React.FormEvent) => {
+  const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
-    // In a real app, you would send this to an API
-    const newCommentObj: Comment = {
-      id: Date.now().toString(),
-      text: newComment,
-      userName: "Current User", // This would come from auth context
-      createdAt: new Date(),
-    };
+    try {
+      const response = await fetch(`/api/projects/${project.id}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: newComment.trim() }),
+      });
 
-    setComments([...comments, newCommentObj]);
-    setNewComment("");
-    toast.success("Comment added");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add comment");
+      }
+
+      const newCommentData = await response.json();
+
+      // Convert API comment format to local format
+      const commentToAdd: Comment = {
+        id: newCommentData.id,
+        text: newCommentData.content,
+        userName: newCommentData.user.name || "Anonymous",
+        userImage: newCommentData.user.image,
+        createdAt: new Date(newCommentData.createdAt),
+      };
+
+      setComments([commentToAdd, ...comments]);
+      setNewComment("");
+      toast.success("Comment added");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "An error occurred while adding the comment"
+      );
+    }
   };
 
   const stopPropagation = (e: React.MouseEvent) => {
@@ -299,7 +359,12 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           </DialogHeader>
 
           <div className="max-h-[300px] overflow-y-auto space-y-3 my-4 pr-2">
-            {comments.length > 0 ? (
+            {isLoadingComments ? (
+              <div className="text-center py-8">
+                <div className="animate-spin h-10 w-10 border-2 border-white/20 border-t-white rounded-full mx-auto mb-2"></div>
+                <p className="text-gray-400">Loading comments...</p>
+              </div>
+            ) : comments.length > 0 ? (
               comments.map((comment) => (
                 <div key={comment.id} className="border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2 mb-1">
