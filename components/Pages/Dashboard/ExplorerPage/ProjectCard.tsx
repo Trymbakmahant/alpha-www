@@ -8,7 +8,7 @@ import { Project } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
-import { ThumbsUp, ThumbsDown, MessageCircle } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageCircle, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -223,7 +223,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
   };
 
   return (
-    <Link href={`/project/${project.id}`} className="block">
+    <div className="block">
       <Card className="group relative overflow-hidden rounded-xl bg-[#0f1117] border-[#1a1f2e] hover:border-[#2a3041] transition-all duration-300">
         {/* Image Container with Gradient Overlay */}
         <div className="relative w-full aspect-[16/9] overflow-hidden">
@@ -264,6 +264,18 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 <p className="text-xs text-gray-400">{formattedDate}</p>
               </div>
             </div>
+
+            {/* View Project Button */}
+            <Link href={`/dashboard/projects/${project.id}`} passHref>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 bg-[#2A0E61] hover:bg-[#3a1e71] text-white border-none"
+              >
+                <Eye className="h-4 w-4" />
+                <span>View</span>
+              </Button>
+            </Link>
           </div>
 
           {/* Social Interactions */}
@@ -368,6 +380,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
         </DialogContent>
       </Dialog>
-    </Link>
+    </div>
   );
 }
