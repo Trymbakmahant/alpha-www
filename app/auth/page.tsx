@@ -37,7 +37,7 @@ export default function AuthPage() {
       <div className="max-w-md w-full space-y-8 p-8 bg-[#0A0A1B] rounded-xl shadow-xl border border-[#232333]">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold text-white">
-            Welcome to Send Arcade
+            Welcome to Alpha
           </h2>
           <p className="mt-2 text-sm text-gray-400">
             Sign in to access your account
