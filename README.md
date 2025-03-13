@@ -29,12 +29,6 @@ Before you begin, ensure you have the following installed:
    pnpm install
    ```
 
-   If you encounter `ERESOLVE could not resolve` errors, try:
-
-   ```sh
-   npm install --legacy-peer-deps
-   ```
-
 3. **Environment Setup**
 
    - Copy the `.env.example` file to create your local `.env`:
