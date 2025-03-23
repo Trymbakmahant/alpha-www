@@ -56,23 +56,16 @@ const Page = () => {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4">
-            What do you want to build?
+            What do you want to build with Alpha?
           </h1>
           <p className="text-xl text-gray-400">
-            Prompt, run, edit, and deploy full-stack{" "}
-            <span className="text-white">web</span> and{" "}
-            <span className="text-white">mobile</span> apps.
+            Prompt, run, edit, and deploy your block code{" "}
           </p>
         </div>
 
         {/* Chat Interface */}
         <div className="w-full max-w-2xl mx-auto">
           <ChatInterface />
-        </div>
-
-        {/* Footer Links */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>or start a blank app with your favorite stack</p>
         </div>
       </main>
     </div>

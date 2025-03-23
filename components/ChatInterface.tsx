@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { LinkIcon, SparklesIcon } from "@heroicons/react/24/outline";
 
 export default function ChatInterface() {
@@ -9,6 +9,15 @@ export default function ChatInterface() {
   const [chatHistory, setChatHistory] = useState<
     Array<{ role: "user" | "assistant"; content: string }>
   >([]);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatHistory, isLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,11 +40,31 @@ export default function ChatInterface() {
 
       if (!response.ok) throw new Error("Failed to get response");
 
-      const data = await response.json();
-      setChatHistory((prev) => [
-        ...prev,
-        { role: "assistant", content: data.message },
-      ]);
+      // Add assistant message placeholder
+      const assistantMessage = { role: "assistant" as const, content: "" };
+      setChatHistory((prev) => [...prev, assistantMessage]);
+
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No reader available");
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        // Convert the chunk to text
+        const chunk = new TextDecoder().decode(value);
+
+        // Update the last message (assistant's message) with the new chunk
+        setChatHistory((prev) => {
+          const newHistory = [...prev];
+          const lastMessage = newHistory[newHistory.length - 1];
+          if (lastMessage.role === "assistant") {
+            lastMessage.content += chunk;
+          }
+          return newHistory;
+        });
+      }
     } catch (error) {
       console.error("Error:", error);
       // Handle error appropriately
@@ -47,7 +76,7 @@ export default function ChatInterface() {
   return (
     <div className="w-full bg-gray-800/50 rounded-lg backdrop-blur-sm border border-gray-700">
       {/* Chat History */}
-      <div className="h-[300px] overflow-y-auto p-4 space-y-4">
+      <div className="h-full min-h-[300px] max-h-[calc(100vh-10rem)] overflow-y-auto p-4 space-y-4">
         {chatHistory.map((chat, index) => (
           <div
             key={index}
@@ -73,6 +102,7 @@ export default function ChatInterface() {
             </div>
           </div>
         )}
+        <div ref={chatEndRef} />
       </div>
 
       {/* Input Form */}
@@ -85,7 +115,7 @@ export default function ChatInterface() {
             placeholder="How can I help you today?"
             className="w-full bg-gray-900 text-white rounded-lg pl-4 pr-20 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex space-x-2">
+          {/* <div className="absolute right-2 top-1/2 -translate-y-1/2 flex space-x-2">
             <button
               type="button"
               className="p-2 text-gray-400 hover:text-gray-300"
@@ -98,8 +128,8 @@ export default function ChatInterface() {
               className="p-2 text-gray-400 hover:text-gray-300"
             >
               <SparklesIcon className="w-5 h-5" />
-            </button>
-          </div>
+            </button> */}
+          {/* </div> */}
         </div>
       </form>
     </div>
